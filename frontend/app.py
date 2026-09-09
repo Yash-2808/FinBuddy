@@ -1163,12 +1163,13 @@ with tab_ops:
     target_f = st.selectbox("Inspect Feature Distribution", FEATURE_NAMES, index=7)
 
     if px is not None:
-        b_series = drift_det.baseline_df[target_f]
-        p_series = prod_data[target_f]
+        b_series = drift_det.baseline_df[target_f].dropna()
+        p_series = prod_data[target_f].dropna()
+        n_pts = min(1000, len(b_series), len(p_series))
 
         plot_d = pd.DataFrame({
-            "Value": np.concatenate([b_series[:1500], p_series[:1500]]),
-            "Dataset": ["Baseline (Training)"] * 1500 + ["Production (Current)"] * 1500
+            "Value": np.concatenate([b_series.iloc[:n_pts].values, p_series.iloc[:n_pts].values]),
+            "Dataset": ["Baseline (Training)"] * n_pts + ["Production (Current)"] * n_pts
         })
 
         fig_distr = px.histogram(
