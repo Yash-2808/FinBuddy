@@ -19,11 +19,21 @@ class CreditRiskExplainer:
         model_path: str = "models/credit_risk_xgb.pkl",
         explainer_path: str = "models/shap_explainer.pkl"
     ):
-        self.model_path = model_path
-        self.explainer_path = explainer_path
+        self.model_path = self._resolve_path(model_path)
+        self.explainer_path = self._resolve_path(explainer_path)
         self.model: Optional[xgb.XGBClassifier] = None
         self.explainer: Optional[shap.TreeExplainer] = None
         self._load_artifacts()
+
+    @staticmethod
+    def _resolve_path(path: str) -> str:
+        if os.path.exists(path):
+            return path
+        root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
+        alt_path = os.path.join(root_dir, path)
+        if os.path.exists(alt_path):
+            return alt_path
+        return path
 
     def _load_artifacts(self) -> None:
         if os.path.exists(self.model_path):

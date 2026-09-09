@@ -4,6 +4,11 @@ FROM python:3.11-slim
 # Set working directory
 WORKDIR /app
 
+# Set Python environment variables
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONPATH="/app:$PYTHONPATH"
+
 # Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
@@ -18,8 +23,8 @@ RUN pip install --no-cache-dir --upgrade pip && \
 # Copy application files
 COPY . .
 
-# Expose ports: 8501 (Streamlit Frontend) and 8000 (FastAPI Backend)
-EXPOSE 8501 8000
+# Expose ports
+EXPOSE 8501 8000 10000
 
-# Default entrypoint starts Streamlit dashboard
-CMD ["streamlit", "run", "frontend/app.py", "--server.port=8501", "--server.address=0.0.0.0", "--server.headless=true"]
+# Default entrypoint starts Streamlit dashboard and binds to Render's dynamic $PORT or 8501
+CMD sh -c "streamlit run frontend/app.py --server.port=${PORT:-8501} --server.address=0.0.0.0 --server.headless=true"

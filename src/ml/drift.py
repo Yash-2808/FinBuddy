@@ -60,9 +60,19 @@ class DriftDetector:
     """Monitors incoming production features against training baseline for data drift."""
 
     def __init__(self, baseline_data_path: str = "data/credit_baseline.csv"):
-        self.baseline_data_path = baseline_data_path
+        self.baseline_data_path = self._resolve_path(baseline_data_path)
         self.baseline_df: Optional[pd.DataFrame] = None
         self._load_baseline()
+
+    @staticmethod
+    def _resolve_path(path: str) -> str:
+        if os.path.exists(path):
+            return path
+        root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
+        alt_path = os.path.join(root_dir, path)
+        if os.path.exists(alt_path):
+            return alt_path
+        return path
 
     def _load_baseline(self) -> None:
         if os.path.exists(self.baseline_data_path):

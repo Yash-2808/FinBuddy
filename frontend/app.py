@@ -9,7 +9,14 @@ Features:
 - Interactive 5-Axis Radar, SHAP Waterfall, Live Candlesticks, and MLOps Drift Engine.
 """
 
+import sys
 import os
+
+# Ensure the project root is in sys.path for cloud platforms (Render, Streamlit Cloud, Docker)
+ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if ROOT_DIR not in sys.path:
+    sys.path.insert(0, ROOT_DIR)
+
 import json
 import time
 import pandas as pd
