@@ -6,6 +6,8 @@
 [![XGBoost](https://img.shields.io/badge/XGBoost-2.0%2B-eb6e00.svg)](https://xgboost.readthedocs.io/)
 [![SHAP](https://img.shields.io/badge/SHAP-Explainability-purple.svg)](https://shap.readthedocs.io/)
 [![LangChain](https://img.shields.io/badge/LangChain-0.2%2B-1C3C3C.svg)](https://langchain.com)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED.svg)](https://www.docker.com/)
+[![Render](https://img.shields.io/badge/Render-Deployed-46E3B7.svg)](https://render.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 > **FinBuddy** is a production-grade Autonomous Financial AI platform combining **Multi-Tool Agentic LLMs**, **High-Accuracy Explainable Machine Learning (XGBoost + SHAP TreeExplainer)**, **Real-Time Market Valuation Sandboxes**, and **Continuous MLOps Concept Drift Observability (PSI & KS-Test)**.
@@ -20,7 +22,8 @@
 - [Repository Structure](#-repository-structure)
 - [Interactive Web Dashboard (UI)](#-interactive-web-dashboard-ui)
 - [FastAPI REST API Reference](#-fastapi-rest-api-reference)
-- [Installation & Quick Start](#-installation--quick-start)
+- [Installation & Local Setup](#-installation--local-setup)
+- [Docker & Cloud Deployment (Render)](#-docker--cloud-deployment-render)
 - [Testing Suite](#-testing-suite)
 - [Tech Stack](#-tech-stack)
 - [Governance & Regulatory Compliance](#-governance--regulatory-compliance)
@@ -36,7 +39,7 @@ Modern financial underwriting and equity research require combining quantitative
 2. **Explainable Underwriting Engine**: An optimized **XGBoost 2.0** model achieving **96.13% accuracy** and **0.9787 ROC-AUC**, paired with **SHAP TreeExplainer** for transparent factor attribution.
 3. **Discounted Cash Flow (DCF) Sandbox**: Interactive 5-year intrinsic valuation models with sensitivity sliders for WACC, terminal growth rates, and cash flow projections.
 4. **MLOps Concept Drift Radar**: Real-time statistical distribution monitoring using **Population Stability Index (PSI)** and **Kolmogorov-Smirnov (KS)** tests to alert against macroeconomic stress.
-5. **Ultra-High-Fidelity Cyber-Fintech UI**: Clean, responsive dark interface inspired by modern fintech design systems with dynamic aurora mesh animations, scroll reveals, and glassmorphic bento grids.
+5. **Ultra-High-Fidelity Cyber-Fintech UI**: Clean, responsive dark interface inspired by modern fintech design systems with dynamic aurora mesh animations, scroll reveals, and glassmorphic bento cards.
 
 ---
 
@@ -128,6 +131,8 @@ The XGBoost Credit Risk Classifier was evaluated on a stratified holdout test se
 
 ```
 FinBuddy/
+├── .streamlit/                 # Streamlit configuration
+│   └── config.toml             # Dark theme & headless server config
 ├── data/                       # Training baseline & synthetic datasets
 │   └── credit_baseline.csv     # 25,000 synthetic underwriting records
 ├── models/                     # Serialized ML & Explainability artifacts
@@ -154,6 +159,8 @@ FinBuddy/
 ├── tests/                      # Automated Unit Test Suite
 │   ├── test_ml.py              # ML pipeline & MLOps tests
 │   └── test_agent.py           # Agent orchestrator & tool tests
+├── Dockerfile                  # Production container definition
+├── docker-compose.yml          # Multi-service composition (UI + API)
 ├── .env.example                # Environment variable configuration template
 ├── .gitignore                  # Git ignore rules for Python & caches
 ├── requirements.txt            # Python package dependencies
@@ -164,7 +171,7 @@ FinBuddy/
 
 ## 🖥️ Interactive Web Dashboard (UI)
 
-The frontend is built with **Streamlit** and heavily styled using custom CSS and JavaScript to deliver an ultra-premium experience:
+The frontend is built with **Streamlit** and styled using custom CSS to deliver a premium fintech experience:
 
 1. **💬 AI Copilot**:
    - Conversational assistant with animated waveform indicator.
@@ -264,7 +271,7 @@ The backend runs on **FastAPI** on port `8000`. Full interactive documentation i
 
 ---
 
-## ⚡ Installation & Quick Start
+## ⚡ Installation & Local Setup
 
 ### 1. Prerequisites
 - Python 3.10, 3.11, 3.12, 3.13, or 3.14
@@ -278,7 +285,7 @@ cd FinBuddy
 
 ### 3. Create & Activate Virtual Environment
 ```bash
-# Windows
+# Windows (PowerShell)
 python -m venv venv
 .\venv\Scripts\activate
 
@@ -312,6 +319,35 @@ Open **[http://localhost:8501](http://localhost:8501)** in your web browser.
 
 ---
 
+## 🐳 Docker & Cloud Deployment (Render)
+
+### 1. Run with Docker Locally
+```bash
+# Build the Docker image
+docker build -t finbuddy .
+
+# Run the container
+docker run -p 8501:8501 finbuddy
+```
+Open **[http://localhost:8501](http://localhost:8501)**.
+
+### 2. Run with Docker Compose (Frontend + Backend)
+```bash
+docker-compose up --build
+```
+- Streamlit UI: `http://localhost:8501`
+- FastAPI REST API: `http://localhost:8000`
+
+### 3. Deploy to Render (Cloud)
+1. Fork or push this repository to GitHub: `https://github.com/Yash-2808/FinBuddy.git`
+2. Log into [Render Dashboard](https://dashboard.render.com/) and click **New +** → **Web Service**.
+3. Connect your GitHub repository.
+4. Select **Docker** as the Environment.
+5. Set the Start Command (optional, Dockerfile handles this automatically).
+6. Click **Deploy Web Service**!
+
+---
+
 ## 🧪 Testing Suite
 
 FinBuddy includes a unit test suite verifying ML pipelines, SHAP explainability, drift detection, tools, and agent fallback routers:
@@ -338,12 +374,13 @@ python -m unittest discover -s tests -p "test_*.py" -v
 | Domain | Technologies |
 | :--- | :--- |
 | **AI & Agent Orchestration** | LangChain, LangSmith / OpenTelemetry tracing ready, Heuristic Fallback Router |
-| **Machine Learning** | XGBoost, Scikit-Learn, NumPy, Pandas |
+| **Machine Learning** | XGBoost 2.0, Scikit-Learn, NumPy, Pandas |
 | **Explainability (XAI)** | SHAP (SHapley Additive exPlanations TreeExplainer) |
 | **MLOps & Observability** | Population Stability Index (PSI), SciPy (Kolmogorov-Smirnov Test) |
 | **Backend API** | FastAPI, Uvicorn, Pydantic v2 |
 | **Frontend UI** | Streamlit, Plotly Express & Graph Objects, Custom CSS/JS Animations |
 | **Market Intelligence** | yfinance |
+| **Container & Cloud** | Docker, Docker Compose, Render |
 | **Serialization & Storage** | Joblib, JSON |
 
 ---
