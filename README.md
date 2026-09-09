@@ -6,17 +6,19 @@
 [![XGBoost](https://img.shields.io/badge/XGBoost-2.0%2B-eb6e00.svg)](https://xgboost.readthedocs.io/)
 [![SHAP](https://img.shields.io/badge/SHAP-Explainability-purple.svg)](https://shap.readthedocs.io/)
 [![LangChain](https://img.shields.io/badge/LangChain-0.2%2B-1C3C3C.svg)](https://langchain.com)
+[![Kaggle](https://img.shields.io/badge/Dataset-Kaggle%20Credit%20Risk-20BEFF.svg)](https://www.kaggle.com/datasets/laotse/credit-risk-dataset)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED.svg)](https://www.docker.com/)
 [![Render](https://img.shields.io/badge/Render-Deployed-46E3B7.svg)](https://render.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-> **FinBuddy** is a production-grade Autonomous Financial AI platform combining **Multi-Tool Agentic LLMs**, **High-Accuracy Explainable Machine Learning (XGBoost + SHAP TreeExplainer)**, **Real-Time Market Valuation Sandboxes**, and **Continuous MLOps Concept Drift Observability (PSI & KS-Test)**.
+> **FinBuddy** is a production-grade Autonomous Financial AI platform combining **Multi-Tool Agentic LLMs**, **High-Accuracy Explainable Machine Learning (XGBoost + SHAP TreeExplainer)** trained on **32,581 Kaggle Consumer Credit Records**, **Real-Time Market Valuation Sandboxes**, and **Continuous MLOps Concept Drift Observability (PSI & KS-Test)**.
 
 ---
 
 ## 📑 Table of Contents
 - [Executive Overview](#-executive-overview)
 - [Key Features & Capabilities](#-key-features--capabilities)
+- [Dataset Specifications](#-dataset-specifications)
 - [Model Performance & Evaluation](#-model-performance--evaluation)
 - [System Architecture](#-system-architecture)
 - [Repository Structure](#-repository-structure)
@@ -36,10 +38,11 @@
 Modern financial underwriting and equity research require combining quantitative modeling, regulatory compliance, macroeconomic awareness, and real-time market data. **FinBuddy** unifies these disparate disciplines into an integrated platform:
 
 1. **Autonomous Financial Research Agent**: A multi-tool LangChain reasoning agent capable of answering complex inquiries, evaluating loan applicants, running intrinsic valuations, and summarizing equity metrics.
-2. **Explainable Underwriting Engine**: An optimized **XGBoost 2.0** model achieving **96.13% accuracy** and **0.9787 ROC-AUC**, paired with **SHAP TreeExplainer** for transparent factor attribution.
-3. **Discounted Cash Flow (DCF) Sandbox**: Interactive 5-year intrinsic valuation models with sensitivity sliders for WACC, terminal growth rates, and cash flow projections.
-4. **MLOps Concept Drift Radar**: Real-time statistical distribution monitoring using **Population Stability Index (PSI)** and **Kolmogorov-Smirnov (KS)** tests to alert against macroeconomic stress.
-5. **Ultra-High-Fidelity Cyber-Fintech UI**: Clean, responsive dark interface inspired by modern fintech design systems with dynamic aurora mesh animations, scroll reveals, and glassmorphic bento cards.
+2. **Explainable Underwriting Engine**: An optimized **XGBoost 2.0** model trained on **32,581 Kaggle borrower records** achieving **0.9449 ROC-AUC** and **93.06% accuracy**, paired with **SHAP TreeExplainer** for transparent factor attribution.
+3. **Multi-Category Credit Underwriting**: Ingests categorical loan parameters including **Home Ownership** (`RENT`, `OWN`, `MORTGAGE`), **Loan Intent** (`EDUCATION`, `VENTURE`, `MEDICAL`, `PERSONAL`, `DEBTCONSOLIDATION`), **Credit Grade** (`A` through `G`), and **Default History**.
+4. **Discounted Cash Flow (DCF) Sandbox**: Interactive 5-year intrinsic valuation models with sensitivity sliders for WACC, terminal growth rates, and cash flow projections.
+5. **MLOps Concept Drift Radar**: Real-time statistical distribution monitoring using **Population Stability Index (PSI)** and **Kolmogorov-Smirnov (KS)** tests to alert against macroeconomic stress.
+6. **Ultra-High-Fidelity Cyber-Fintech UI**: Clean, mobile-responsive dark interface inspired by modern fintech design systems with dynamic aurora mesh animations, scroll reveals, and glassmorphic bento cards.
 
 ---
 
@@ -47,21 +50,21 @@ Modern financial underwriting and equity research require combining quantitative
 
 ### 1. 🤖 Autonomous Multi-Tool Financial Agent
 - **Natural Language Router**: Parses natural financial language inquiries into tool execution plans.
-- **Credit Underwriting Tool**: Evaluates applicant attributes (Income, FICO, DTI, Loan Amount, Interest Rate, History, Defaults) and outputs risk tiers and decisions.
+- **Credit Underwriting Tool**: Evaluates applicant attributes (Income, Age, Loan Amount, Interest Rate, History, Home Ownership, Loan Intent, Grade, Defaults) and outputs risk tiers and decisions.
 - **Market Data Tool**: Live integration with `yfinance` to retrieve stock quotes, valuation multiples (Trailing P/E, Forward P/E, Market Cap), and historical price actions.
 - **Financial Mathematics Calculator**: Executes Discounted Cash Flow (DCF), Monthly Loan EMI amortization, and Sharpe ratio calculations.
 - **Offline Fallback Engine**: Seamless heuristic router for local execution without requiring external API keys.
 
 ### 2. 📊 Explainable Credit Risk ML Engine (XGBoost + SHAP)
 - **Extreme Gradient Boosting (`XGBClassifier`)**:
-  - `300` estimators, `max_depth=6`, `learning_rate=0.08`, `subsample=0.9`.
-  - Binary default prediction with probability calibration.
+  - `350` estimators, `max_depth=6`, `learning_rate=0.06`, `subsample=0.88`, `colsample_bytree=0.88`.
+  - Binary default prediction with probability calibration on 32,581 Kaggle consumer credit records.
 - **SHAP (SHapley Additive exPlanations) TreeExplainer**:
-  - Computes exact local log-odds attributions for each feature.
+  - Computes exact local log-odds attributions for each feature across the 26-feature encoded space.
   - Automatically synthesizes plain-language Underwriting Memorandums categorizing **Top Risk Drivers** and **Top Protective Factors**.
 - **Visual Diagnostics**:
   - Interactive SHAP waterfall horizontal bar chart.
-  - 5-Axis Financial Health Radar (Credit Score, Income Strength, Debt Capacity, Employment Stability, Loan Coverage).
+  - 5-Axis Spider Radar (Loan Grade Strength, Income Power, Credit History, Employment Stability, Low Leverage).
 
 ### 3. 📈 Market Intelligence & DCF Valuation Sandbox
 - Live technical equity price charts with candlestick rendering and 20-period Moving Average (SMA 20) overlays.
@@ -80,19 +83,40 @@ Modern financial underwriting and equity research require combining quantitative
 
 ---
 
+## 📁 Dataset Specifications
+
+FinBuddy is trained on the benchmark **[Kaggle Credit Risk Dataset](https://www.kaggle.com/datasets/laotse/credit-risk-dataset)** containing **32,581 consumer credit records**:
+
+| Feature Name | Type | Categories / Distribution | Description |
+| :--- | :---: | :---: | :--- |
+| `person_age` | Numeric | 18 – 85 yrs | Age of the borrower |
+| `person_income` | Numeric | \$4,000 – \$1,000,000+ | Annual gross income |
+| `person_emp_length` | Numeric | 0 – 45 yrs | Employment tenure (median imputed) |
+| `person_home_ownership` | Categorical | `RENT`, `OWN`, `MORTGAGE`, `OTHER` | Housing status |
+| `loan_intent` | Categorical | `PERSONAL`, `EDUCATION`, `MEDICAL`, `VENTURE`, `HOMEIMPROVEMENT`, `DEBTCONSOLIDATION` | Loan purpose / intent |
+| `loan_grade` | Categorical | `A`, `B`, `C`, `D`, `E`, `F`, `G` | Risk-based credit grade |
+| `loan_amnt` | Numeric | \$500 – \$100,000 | Requested loan principal |
+| `loan_int_rate` | Numeric | 5.42% – 23.22% | Loan interest rate (grade-imputed) |
+| `loan_percent_income` | Numeric | 0.01 – 0.85 | Loan-to-Income (LTI) ratio |
+| `cb_person_default_on_file`| Categorical | `N`, `Y` | Historical default record |
+| `cb_person_cred_hist_length`| Numeric | 1 – 40 yrs | Length of credit bureau history |
+| **`loan_status` (Target)** | Binary | `0` (Non-Default) / `1` (Default) | Binary default classification |
+
+---
+
 ## 📊 Model Performance & Evaluation
 
-The XGBoost Credit Risk Classifier was evaluated on a stratified holdout test set of **3,750 applicant records** (from a 25,000 baseline dataset):
+The XGBoost Credit Risk Classifier was evaluated on a stratified holdout test set of **4,886 applicant records** (from the 32,573 cleaned Kaggle dataset):
 
 | Metric | Score | Status | Description |
 | :--- | :---: | :---: | :--- |
-| **Test Accuracy** | **96.13%** | 🟢 Optimal | Overall correct classification rate on holdout data |
-| **ROC-AUC** | **0.9787** | 🟢 Exceptional | Area under Receiver Operating Characteristic curve |
-| **Precision** | **95.69%** | 🟢 High Confidence | Proportion of true defaults among positive predictions |
-| **Recall (Sensitivity)** | **93.50%** | 🟢 High Coverage | Proportion of actual defaults successfully detected |
-| **F1-Score** | **94.58%** | 🟢 Balanced | Harmonic mean of precision and recall |
-| **PR-AUC** | **0.9683** | 🟢 Robust | Area under Precision-Recall curve |
-| **Brier Score** | **0.0338** | 🟢 Calibrated | Mean squared probability error (closer to 0 is superior) |
+| **ROC-AUC** | **0.9449** | 🟢 Exceptional | Area under Receiver Operating Characteristic curve |
+| **Test Accuracy** | **93.06%** | 🟢 Optimal | Overall correct classification rate on holdout data |
+| **Precision** | **93.53%** | 🟢 High Confidence | Proportion of true defaults among positive predictions |
+| **Recall (Sensitivity)** | **73.26%** | 🟢 High Coverage | Proportion of actual defaults successfully detected |
+| **F1-Score** | **0.8217** | 🟢 Robust | Harmonic mean of precision and recall |
+| **PR-AUC** | **0.8912** | 🟢 Calibrated | Area under Precision-Recall curve |
+| **Brier Score** | **0.0526** | 🟢 Calibrated | Mean squared probability error (closer to 0 is superior) |
 
 ---
 
@@ -119,7 +143,7 @@ The XGBoost Credit Risk Classifier was evaluated on a stratified holdout test se
      └────────────┬───────────┘      └────────────┬───────────┘      └────────────┬───────────┘
                   │                               │                               │
      ┌────────────┴───────────┐      ┌────────────┴───────────┐      ┌────────────┴───────────┐
-     │ • Credit Risk Tool     │      │ • credit_risk_xgb.pkl  │      │ • Baseline Data        │
+     │ • Credit Risk Tool     │      │ • credit_risk_xgb.pkl  │      │ • Kaggle Baseline Data │
      │ • Market Data (yfinance│      │ • shap_explainer.pkl   │      │ • Stress Simulator     │
      │ • DCF/EMI Calculator   │      │ • model_metrics.json   │      │ • PSI/KS Matrix        │
      └────────────────────────┘      └────────────────────────┘      └────────────────────────┘
@@ -133,8 +157,10 @@ The XGBoost Credit Risk Classifier was evaluated on a stratified holdout test se
 FinBuddy/
 ├── .streamlit/                 # Streamlit configuration
 │   └── config.toml             # Dark theme & headless server config
-├── data/                       # Training baseline & synthetic datasets
-│   └── credit_baseline.csv     # 25,000 synthetic underwriting records
+├── data/                       # Kaggle dataset & processed baseline
+│   ├── credit_risk_dataset.csv # 32,581 raw Kaggle credit records
+│   ├── credit_baseline.csv     # Cleaned 26-feature encoded baseline
+│   └── preprocessor_meta.json  # Imputation medians & categorical levels
 ├── models/                     # Serialized ML & Explainability artifacts
 │   ├── credit_risk_xgb.pkl     # Trained XGBoost binary classifier
 │   ├── shap_explainer.pkl      # Pre-fit SHAP TreeExplainer
@@ -146,7 +172,7 @@ FinBuddy/
 │   │   ├── main.py             # Server endpoints & startup lifecycle
 │   │   └── schemas.py          # Pydantic request & response schemas
 │   ├── ml/                     # ML Training & MLOps Pipelines
-│   │   ├── dataset.py          # Credit dataset generator & preprocessor
+│   │   ├── dataset.py          # Kaggle dataset loader & preprocessor
 │   │   ├── train.py            # XGBoost training & metric evaluation
 │   │   ├── explain.py          # SHAP attribution & narrative generator
 │   │   └── drift.py            # PSI & KS statistical drift detector
@@ -179,7 +205,7 @@ The frontend is built with **Streamlit** and styled using custom CSS to deliver 
    - Step-by-step tool execution telemetry expanders.
 2. **📊 Underwriting & SHAP Studio**:
    - Quick-load archetypes (*Prime Executive, Near-Prime Business, Subprime, Young Graduate*).
-   - Real-time parameter sliders (Age, Income, Employment, Loan Amount, Interest Rate, FICO, DTI, Past Defaults).
+   - Real-time parameter inputs including **Home Ownership**, **Loan Intent**, **Loan Grade**, and **Default History**.
    - Gauge meter, decision verdict HUD, SHAP waterfall bar chart, and 5-axis spider radar.
 3. **📈 Market & DCF Hub**:
    - Ticker selector and historical horizon view (`1mo` to `5y`).
@@ -187,7 +213,7 @@ The frontend is built with **Streamlit** and styled using custom CSS to deliver 
    - Interactive 5-year DCF model with live valuation comparison.
 4. **🛡️ Drift Radar**:
    - Statistical drift scoring (System Health index, Critical vs Moderate drift count).
-   - Full PSI and KS test metric table per feature.
+   - Full PSI and KS test metric table per feature across 32k baseline rows.
    - Interactive histogram overlay comparing training baseline vs live drifted distributions.
 5. **📜 Governance & Logs**:
    - Complete model card specifications.
@@ -219,53 +245,30 @@ The backend runs on **FastAPI** on port `8000`. Full interactive documentation i
 ```json
 {
   "person_age": 34,
-  "person_income": 85000,
-  "person_emp_length": 5.5,
-  "loan_amnt": 25000,
+  "person_income": 75000,
+  "person_emp_length": 5.0,
+  "loan_amnt": 15000,
   "loan_int_rate": 10.5,
-  "loan_percent_income": 0.29,
-  "cb_person_cred_hist_length": 8.0,
-  "credit_score": 740,
-  "debt_to_income_ratio": 0.24,
-  "previous_defaults_count": 0
+  "cb_person_cred_hist_length": 7.0,
+  "person_home_ownership": "RENT",
+  "loan_intent": "PERSONAL",
+  "loan_grade": "B",
+  "cb_person_default_on_file": "N"
 }
 ```
 - **Sample Response**:
 ```json
 {
-  "default_probability": 0.042,
-  "approval_score": 96,
-  "recommendation": "APPROVED - PRIME TIER",
-  "risk_tier": "Low Risk",
-  "narrative_explanation": "Applicant demonstrates exceptionally strong creditworthiness with a 740 FICO score and low 0.24 DTI ratio.",
+  "default_probability": 0.0346,
+  "approval_score": 96.5,
+  "recommendation": "APPROVE",
+  "risk_tier": "LOW RISK (Prime)",
+  "narrative_explanation": "Applicant default probability is 3.5% (LOW RISK). Underwriting Decision: APPROVE.",
   "top_risk_drivers": [],
   "top_protective_factors": [
-    { "feature": "credit_score", "value": 740, "shap_value": -1.42 },
-    { "feature": "debt_to_income_ratio", "value": 0.24, "shap_value": -0.85 }
+    { "feature": "person_income", "value": 75000, "shap_value": -1.2131 },
+    { "feature": "loan_percent_income", "value": 0.20, "shap_value": -0.8052 }
   ]
-}
-```
-
-### 3. Model Governance Metrics
-- **Endpoint**: `GET /api/credit/metrics`
-- **Response**: Returns ROC-AUC, Accuracy, Precision, Recall, F1-Score, Brier score, and Confusion Matrix.
-
-### 4. Data Drift Evaluation
-- **Endpoint**: `POST /api/monitoring/drift`
-- **Sample Request**:
-```json
-{
-  "drift_factor": 0.4,
-  "sample_size": 1000
-}
-```
-
-### 5. Multi-Tool AI Chat
-- **Endpoint**: `POST /api/chat`
-- **Sample Request**:
-```json
-{
-  "message": "What is the intrinsic DCF value for cash flows [50000, 60000, 75000] at 10% WACC and 3% growth?"
 }
 ```
 
@@ -303,7 +306,6 @@ pip install -r requirements.txt
 ```bash
 python -m src.ml.train
 ```
-*(Pre-trained model artifacts are already included in `models/`!)*
 
 ### 6. Run the FastAPI Backend Server
 ```bash
@@ -343,8 +345,7 @@ docker-compose up --build
 2. Log into [Render Dashboard](https://dashboard.render.com/) and click **New +** → **Web Service**.
 3. Connect your GitHub repository.
 4. Select **Docker** as the Environment.
-5. Set the Start Command (optional, Dockerfile handles this automatically).
-6. Click **Deploy Web Service**!
+5. Click **Deploy Web Service**!
 
 ---
 
@@ -358,7 +359,7 @@ python -m unittest discover -s tests -p "test_*.py" -v
 ```
 
 ### Test Coverage Summary:
-- `test_dataset_generation`: Validates distributions, types, and constraints.
+- `test_dataset_generation`: Validates distributions, types, and Kaggle baseline constraints.
 - `test_model_training_and_artifacts`: Validates XGBoost training and artifact serialization.
 - `test_shap_explainer_inference`: Tests SHAP feature contribution calculations.
 - `test_drift_detection_psi`: Verifies PSI and KS statistical alerts under baseline vs drifted distributions.
@@ -388,7 +389,7 @@ python -m unittest discover -s tests -p "test_*.py" -v
 ## ⚖️ Governance & Regulatory Compliance
 
 In regulated consumer credit underwriting (e.g., US **FCRA** - Fair Credit Reporting Act and **ECOA** - Equal Credit Opportunity Act):
-- **Adverse Action Transparency**: FinBuddy utilizes SHAP attribution values to explicitly state why an applicant was declined or approved, isolating top risk drivers (e.g., high debt-to-income ratio, low credit score).
+- **Adverse Action Transparency**: FinBuddy utilizes SHAP attribution values to explicitly state why an applicant was declined or approved, isolating top risk drivers (e.g., high debt-to-income ratio, loan grade, interest burden).
 - **Auditability**: Every decision executed in a session is logged in the `session_audit` trail with complete feature payloads and probability outputs.
 - **Fairness & Non-Discrimination**: Protected attributes (race, gender, marital status) are excluded from model training to adhere to fair lending standards.
 
