@@ -394,27 +394,34 @@ st.markdown("""
     /* ---------------------------------------------------- */
     /* UNIVERSAL TAB CAPSULE FOR ALL BROWSERS & CLOUD ENVS  */
     /* ---------------------------------------------------- */
-    div[data-testid="stTabs"] {
+    .stTabs, div[data-testid="stTabs"] {
         width: 100% !important;
+        background: transparent !important;
     }
 
-    div[data-testid="stTabs"] [data-baseweb="tab-list"] {
+    .stTabs [data-baseweb="tab-list"],
+    div[data-testid="stTabs"] [data-baseweb="tab-list"],
+    div[data-testid="stTabs"] > div:first-child {
         display: flex !important;
         justify-content: center !important;
         align-items: center !important;
         background: rgba(10, 15, 30, 0.94) !important;
         backdrop-filter: blur(24px) !important;
         -webkit-backdrop-filter: blur(24px) !important;
-        padding: 6px 10px !important;
+        padding: 6px 12px !important;
         border-radius: 100px !important;
-        border: 1px solid rgba(255, 255, 255, 0.14) !important;
+        border: 1px solid rgba(255, 255, 255, 0.16) !important;
         gap: 8px !important;
         width: fit-content !important;
+        max-width: 100% !important;
         margin: 12px auto 36px auto !important;
         box-shadow: 0 20px 45px rgba(0, 0, 0, 0.7) !important;
     }
 
-    div[data-testid="stTabs"] [data-baseweb="tab"] {
+    .stTabs [data-baseweb="tab"],
+    div[data-testid="stTabs"] [data-baseweb="tab"],
+    div[data-testid="stTabs"] button[role="tab"],
+    div[data-testid="stTabs"] button[data-baseweb="tab"] {
         border-radius: 50px !important;
         padding: 10px 24px !important;
         font-weight: 600 !important;
@@ -422,15 +429,32 @@ st.markdown("""
         color: #94A3B8 !important;
         border: none !important;
         background: transparent !important;
+        box-shadow: none !important;
+        outline: none !important;
         transition: all 0.25s ease !important;
     }
 
+    .stTabs [data-baseweb="tab"]:hover,
+    div[data-testid="stTabs"] [data-baseweb="tab"]:hover,
+    div[data-testid="stTabs"] button[role="tab"]:hover {
+        color: #FFFFFF !important;
+        background: rgba(255, 255, 255, 0.08) !important;
+    }
+
+    .stTabs [data-baseweb="tab-highlight"],
+    .stTabs [data-baseweb="tab-border"],
     div[data-testid="stTabs"] [data-baseweb="tab-highlight"],
     div[data-testid="stTabs"] [data-baseweb="tab-border"] {
         display: none !important;
+        height: 0px !important;
+        opacity: 0 !important;
+        visibility: hidden !important;
     }
 
-    div[data-testid="stTabs"] button[aria-selected="true"] {
+    .stTabs [aria-selected="true"],
+    div[data-testid="stTabs"] button[aria-selected="true"],
+    div[data-testid="stTabs"] [data-baseweb="tab"][aria-selected="true"],
+    div[data-testid="stTabs"] button[role="tab"][aria-selected="true"] {
         background: linear-gradient(135deg, #00F2FE 0%, #4FACFE 50%, #6366F1 100%) !important;
         color: #04060A !important;
         border-radius: 50px !important;
@@ -441,7 +465,8 @@ st.markdown("""
     /* ---------------------------------------------------- */
     /* STREAMLIT BORDERED CONTAINERS AS BENTO CARDS         */
     /* ---------------------------------------------------- */
-    div[data-testid="stVerticalBlockBorderWrapper"] {
+    div[data-testid="stVerticalBlockBorderWrapper"],
+    div[data-testid="stVerticalBlock"] > div[style*="border:"] {
         background: rgba(13, 20, 36, 0.90) !important;
         backdrop-filter: blur(24px) !important;
         -webkit-backdrop-filter: blur(24px) !important;
@@ -454,7 +479,8 @@ st.markdown("""
         animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both !important;
     }
 
-    div[data-testid="stVerticalBlockBorderWrapper"]:hover {
+    div[data-testid="stVerticalBlockBorderWrapper"]:hover,
+    div[data-testid="stVerticalBlock"] > div[style*="border:"]:hover {
         border-color: rgba(0, 242, 254, 0.45) !important;
         box-shadow: 0 30px 65px -15px rgba(0, 242, 254, 0.22) !important;
     }
