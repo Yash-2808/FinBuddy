@@ -1430,11 +1430,11 @@ with tab_audit:
         st.markdown("###### 🏷️ Model Governance Card")
         st.markdown("""
         - **Model Architecture:** Extreme Gradient Boosting (`XGBClassifier`)
-        - **Tree Depth / Estimators:** `max_depth=5`, `n_estimators=250`
+        - **Tree Depth / Estimators:** `max_depth=6`, `n_estimators=350`
         - **Objective:** Logistic Loss (Binary Classification on Default)
         - **Explainability Standard:** SHAP TreeExplainer (`shap.TreeExplainer`)
-        - **Data Baseline:** 20,000 synthetic underwriting records
-        - **Features:** 10 core financial ratios (DTI, FICO, Income, Loan/Inc, History)
+        - **Data Baseline:** 32,581 Kaggle consumer credit records
+        - **Features:** 26 encoded features (Grade, Intent, Home, Income, LTI, Rate, History)
         """)
 
         if os.path.exists("models/model_metrics.json"):
@@ -1450,10 +1450,13 @@ with tab_audit:
                 p = item["payload"]
                 log_data.append({
                     "Time": item["time"],
-                    "Income ($)": f"${p['person_income']:,.0f}",
-                    "Loan ($)": f"${p['loan_amnt']:,.0f}",
-                    "Score": p['credit_score'],
-                    "DTI": f"{p['debt_to_income_ratio']:.2f}",
+                    "Income ($)": f"${p.get('person_income', 0):,.0f}",
+                    "Loan ($)": f"${p.get('loan_amnt', 0):,.0f}",
+                    "Grade": p.get("loan_grade", "B"),
+                    "Intent": p.get("loan_intent", "PERSONAL"),
+                    "Home": p.get("person_home_ownership", "RENT"),
+                    "Rate (%)": f"{p.get('loan_int_rate', 0):.2f}%",
+                    "LTI": f"{p.get('loan_percent_income', 0):.1%}",
                     "Default Prob": f"{item['prob']:.1%}",
                     "Decision": item["rec"]
                 })
