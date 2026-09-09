@@ -851,7 +851,7 @@ with kpi2:
     st.markdown("""
     <div class="fin-metric-badge">
         <div class="fin-metric-label">Validation ROC-AUC</div>
-        <div class="fin-metric-value" style="color: #34D399 !important;">0.9787</div>
+        <div class="fin-metric-value" style="color: #34D399 !important;">0.9449</div>
     </div>
     """, unsafe_allow_html=True)
 with kpi3:
@@ -977,50 +977,74 @@ with tab_chat:
 # TAB 2: Underwriting & SHAP Studio (Bento Grid)
 # =============================================================
 with tab_risk:
-    st.markdown("<div style='font-size: 1.05rem; font-weight: 700; color: #FFFFFF; margin-bottom: 14px;'>👥 Pre-Load Borrower Archetypes</div>", unsafe_allow_html=True)
+    st.markdown("<div style='font-size: 1.05rem; font-weight: 700; color: #FFFFFF; margin-bottom: 14px;'>👥 Pre-Load Borrower Archetypes (Kaggle Benchmark)</div>", unsafe_allow_html=True)
     bp1, bp2, bp3, bp4 = st.columns(4)
     
-    defaults = {"age": 34, "income": 75000.0, "emp": 5.5, "loan": 15000.0, "score": 710, "int_rate": 11.2, "dti": 0.28, "cred_hist": 8.0, "defaults": 0}
+    defaults = {
+        "age": 34, "income": 75000.0, "emp": 5.0, "loan": 15000.0, "int_rate": 10.5,
+        "cred_hist": 7.0, "home": "RENT", "intent": "PERSONAL", "grade": "B", "default_file": "N"
+    }
 
     if bp1.button("🌟 Prime Executive", use_container_width=True):
-        defaults = {"age": 38, "income": 150000.0, "emp": 9.0, "loan": 20000.0, "score": 790, "int_rate": 6.8, "dti": 0.16, "cred_hist": 14.0, "defaults": 0}
+        defaults = {
+            "age": 38, "income": 150000.0, "emp": 9.0, "loan": 20000.0, "int_rate": 6.8,
+            "cred_hist": 14.0, "home": "OWN", "intent": "HOMEIMPROVEMENT", "grade": "A", "default_file": "N"
+        }
     elif bp2.button("⚖️ Near-Prime Business", use_container_width=True):
-        defaults = {"age": 42, "income": 68000.0, "emp": 4.0, "loan": 22000.0, "score": 660, "int_rate": 13.5, "dti": 0.38, "cred_hist": 9.0, "defaults": 0}
+        defaults = {
+            "age": 42, "income": 68000.0, "emp": 4.0, "loan": 22000.0, "int_rate": 13.5,
+            "cred_hist": 9.0, "home": "MORTGAGE", "intent": "VENTURE", "grade": "C", "default_file": "N"
+        }
     elif bp3.button("🚨 High-Leverage Subprime", use_container_width=True):
-        defaults = {"age": 29, "income": 34000.0, "emp": 1.5, "loan": 25000.0, "score": 530, "int_rate": 24.5, "dti": 0.65, "cred_hist": 3.0, "defaults": 2}
+        defaults = {
+            "age": 29, "income": 34000.0, "emp": 1.5, "loan": 25000.0, "int_rate": 21.5,
+            "cred_hist": 3.0, "home": "RENT", "intent": "DEBTCONSOLIDATION", "grade": "F", "default_file": "Y"
+        }
     elif bp4.button("🎓 Young Graduate", use_container_width=True):
-        defaults = {"age": 23, "income": 58000.0, "emp": 1.0, "loan": 10000.0, "score": 690, "int_rate": 10.5, "dti": 0.22, "cred_hist": 2.0, "defaults": 0}
+        defaults = {
+            "age": 23, "income": 58000.0, "emp": 1.0, "loan": 10000.0, "int_rate": 9.5,
+            "cred_hist": 2.0, "home": "RENT", "intent": "EDUCATION", "grade": "B", "default_file": "N"
+        }
 
-    st.markdown("<div style='margin-bottom: 28px;'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='margin-bottom: 24px;'></div>", unsafe_allow_html=True)
 
-    col_bento_left, col_bento_right = st.columns([1.1, 1.9], gap="large")
+    col_bento_left, col_bento_right = st.columns([1.15, 1.85], gap="large")
 
     with col_bento_left:
         st.markdown("""
         <div class="bento-card">
             <div class="bento-title">📝 Application Parameters</div>
-            <div class="bento-subtitle">Real-time inference inputs for the XGBoost underwriting model.</div>
+            <div class="bento-subtitle">Multi-category inference inputs for Kaggle Credit Risk XGBoost.</div>
             <br>
         """, unsafe_allow_html=True)
 
         f_a1, f_a2 = st.columns(2)
-        in_age = f_a1.number_input("Age", 18, 85, defaults["age"], 1)
+        in_age = f_a1.number_input("Applicant Age", 18, 85, defaults["age"], 1)
         in_emp = f_a2.number_input("Employment (Yrs)", 0.0, 45.0, float(defaults["emp"]), 0.5)
 
-        in_inc = f_a1.number_input("Annual Income ($)", 5000.0, 1000000.0, float(defaults["income"]), 2500.0)
-        in_loan = f_a2.number_input("Requested Loan ($)", 1000.0, 250000.0, float(defaults["loan"]), 1000.0)
+        in_inc = f_a1.number_input("Annual Income ($)", 4000.0, 1000000.0, float(defaults["income"]), 2500.0)
+        in_loan = f_a2.number_input("Requested Loan ($)", 500.0, 100000.0, float(defaults["loan"]), 1000.0)
 
-        in_score = st.slider("FICO Score", 350, 850, int(defaults["score"]), 5)
-        in_dti = st.slider("Debt-to-Income (DTI)", 0.01, 0.90, float(defaults["dti"]), 0.01)
+        f_c1, f_c2 = st.columns(2)
+        home_opts = ["RENT", "OWN", "MORTGAGE", "OTHER"]
+        in_home = f_c1.selectbox("Home Ownership", home_opts, index=home_opts.index(defaults["home"]))
+        
+        intent_opts = ["PERSONAL", "EDUCATION", "MEDICAL", "VENTURE", "HOMEIMPROVEMENT", "DEBTCONSOLIDATION"]
+        in_intent = f_c2.selectbox("Loan Intent", intent_opts, index=intent_opts.index(defaults["intent"]))
+
+        f_c3, f_c4 = st.columns(2)
+        grade_opts = ["A", "B", "C", "D", "E", "F", "G"]
+        in_grade = f_c3.selectbox("Loan Grade", grade_opts, index=grade_opts.index(defaults["grade"]))
+
+        def_opts = ["N", "Y"]
+        in_default_file = f_c4.selectbox("Historical Default on File", def_opts, index=def_opts.index(defaults["default_file"]))
 
         f_a3, f_a4 = st.columns(2)
         in_rate = f_a3.number_input("Interest Rate (%)", 2.0, 35.0, float(defaults["int_rate"]), 0.25)
-        in_hist = f_a4.number_input("Credit History (Yrs)", 1.0, 40.0, float(defaults["cred_hist"]), 0.5)
-
-        in_defaults = st.selectbox("Past Defaults Count", [0, 1, 2, 3, 4], index=defaults["defaults"])
+        in_hist = f_a4.number_input("Credit History Length (Yrs)", 1.0, 40.0, float(defaults["cred_hist"]), 0.5)
         
         in_lti = in_loan / max(in_inc, 1.0)
-        st.caption(f"📌 **Loan-to-Income:** `{in_lti:.1%}` | **Monthly Debt:** `${(in_inc * in_dti)/12:,.0f}/mo`")
+        st.caption(f"📌 **Loan-to-Income (LTI):** `{in_lti:.1%}` | **Monthly Principal & Int:** `${(in_loan * (1 + in_rate/100))/36:,.0f}/mo`")
         st.markdown("</div>", unsafe_allow_html=True)
 
     applicant_data = {
@@ -1031,9 +1055,10 @@ with tab_risk:
         "loan_int_rate": in_rate,
         "loan_percent_income": round(in_lti, 3),
         "cb_person_cred_hist_length": in_hist,
-        "credit_score": in_score,
-        "debt_to_income_ratio": in_dti,
-        "previous_defaults_count": in_defaults,
+        "person_home_ownership": in_home,
+        "loan_intent": in_intent,
+        "loan_grade": in_grade,
+        "cb_person_default_on_file": in_default_file,
     }
 
     with col_bento_right:
@@ -1143,12 +1168,13 @@ with tab_risk:
 
             with sub_tab2:
                 if go is not None:
-                    categories = ['Credit Score', 'Income Strength', 'Debt Capacity', 'Employment', 'Coverage']
+                    categories = ['Loan Grade Strength', 'Income Power', 'Credit History', 'Employment Stability', 'Low Leverage (LTI)']
+                    grade_scores = {'A': 95, 'B': 85, 'C': 70, 'D': 55, 'E': 40, 'F': 25, 'G': 10}
                     app_radar = [
-                        min(100, max(0, (in_score - 350) / 5)),
+                        grade_scores.get(in_grade, 70),
                         min(100, max(0, (in_inc / 150000) * 100)),
-                        min(100, max(0, (1.0 - in_dti) * 100)),
-                        min(100, max(0, (in_emp / 10) * 100)),
+                        min(100, max(0, (in_hist / 20) * 100)),
+                        min(100, max(0, (in_emp / 12) * 100)),
                         min(100, max(0, (1.0 - min(1.0, in_lti)) * 100)),
                     ]
                     fig_radar = go.Figure()

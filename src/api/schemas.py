@@ -23,9 +23,13 @@ class CreditApplicantSchema(BaseModel):
     loan_int_rate: float = Field(11.5, ge=1.0, le=40.0)
     loan_percent_income: Optional[float] = None
     cb_person_cred_hist_length: float = Field(7.0, ge=0)
-    credit_score: int = Field(710, ge=300, le=850)
-    debt_to_income_ratio: float = Field(0.28, ge=0.0, le=1.5)
-    previous_defaults_count: int = Field(0, ge=0, le=10)
+    person_home_ownership: str = Field("RENT", description="RENT, OWN, MORTGAGE, OTHER")
+    loan_intent: str = Field("PERSONAL", description="PERSONAL, EDUCATION, MEDICAL, VENTURE, HOMEIMPROVEMENT, DEBTCONSOLIDATION")
+    loan_grade: str = Field("B", description="A, B, C, D, E, F, G")
+    cb_person_default_on_file: str = Field("N", description="Y or N")
+    credit_score: Optional[int] = Field(710, ge=300, le=850)
+    debt_to_income_ratio: Optional[float] = Field(0.28, ge=0.0, le=1.5)
+    previous_defaults_count: Optional[int] = Field(0, ge=0, le=10)
 
 
 class FeatureContribution(BaseModel):

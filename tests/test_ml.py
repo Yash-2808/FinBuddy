@@ -6,7 +6,7 @@ import tempfile
 import pandas as pd
 import numpy as np
 
-from src.ml.dataset import generate_credit_dataset, FEATURE_NAMES, TARGET_COL
+from src.ml.dataset import generate_credit_dataset, load_and_preprocess_kaggle_dataset, FEATURE_NAMES, TARGET_COL
 from src.ml.train import train_credit_model
 from src.ml.explain import CreditRiskExplainer
 from src.ml.drift import DriftDetector, calculate_psi
@@ -15,7 +15,7 @@ from src.ml.drift import DriftDetector, calculate_psi
 class TestCreditMLPipeline(unittest.TestCase):
 
     def test_dataset_generation(self):
-        """Verify synthetic dataset generator shapes, types, and value constraints."""
+        """Verify Kaggle baseline dataset generator shapes, types, and value constraints."""
         df = generate_credit_dataset(n_samples=500, random_state=42)
         self.assertIsInstance(df, pd.DataFrame)
         self.assertEqual(len(df), 500)
@@ -23,21 +23,15 @@ class TestCreditMLPipeline(unittest.TestCase):
             self.assertIn(col, df.columns)
         self.assertIn(TARGET_COL, df.columns)
         self.assertGreaterEqual(df["person_age"].min(), 18)
-        self.assertGreaterEqual(df["credit_score"].min(), 350)
-        self.assertLessEqual(df["credit_score"].max(), 850)
         self.assertTrue(set(df[TARGET_COL].unique()).issubset({0, 1}))
 
     def test_model_training_and_artifacts(self):
         """Verify XGBoost training pipeline and metrics output."""
         with tempfile.TemporaryDirectory() as tmp_dir:
             output_dir = os.path.join(tmp_dir, "models")
-            data_path = os.path.join(tmp_dir, "test_data.csv")
-            
-            df = generate_credit_dataset(n_samples=1000, random_state=42)
-            df.to_csv(data_path, index=False)
             
             metrics = train_credit_model(
-                data_path=data_path,
+                data_path="data/credit_risk_dataset.csv",
                 model_output_dir=output_dir,
                 random_state=42
             )
@@ -60,9 +54,10 @@ class TestCreditMLPipeline(unittest.TestCase):
             "loan_int_rate": 8.5,
             "loan_percent_income": 0.125,
             "cb_person_cred_hist_length": 8.0,
-            "credit_score": 750,
-            "debt_to_income_ratio": 0.20,
-            "previous_defaults_count": 0,
+            "person_home_ownership": "MORTGAGE",
+            "loan_intent": "EDUCATION",
+            "loan_grade": "A",
+            "cb_person_default_on_file": "N",
         }
         
         result = explainer.predict_and_explain(sample_applicant)
@@ -70,7 +65,7 @@ class TestCreditMLPipeline(unittest.TestCase):
         self.assertGreaterEqual(result["default_probability"], 0.0)
         self.assertLessEqual(result["default_probability"], 1.0)
         self.assertIn("recommendation", result)
-        self.assertEqual(len(result["feature_contributions"]), len(FEATURE_NAMES))
+        self.assertGreater(len(result["feature_contributions"]), 0)
         self.assertLessEqual(len(result["top_risk_drivers"]), 3)
         self.assertLessEqual(len(result["top_protective_factors"]), 3)
 

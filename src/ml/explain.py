@@ -8,7 +8,7 @@ from typing import Dict, Any, List, Optional
 import xgboost as xgb
 import shap
 
-from src.ml.dataset import FEATURE_NAMES
+from src.ml.dataset import FEATURE_NAMES, transform_applicant_input
 
 
 class CreditRiskExplainer:
@@ -56,11 +56,10 @@ class CreditRiskExplainer:
         Calculates credit default probability and local SHAP feature attribution for a single applicant.
         
         Args:
-            applicant_data: Dictionary of applicant features matching FEATURE_NAMES.
+            applicant_data: Dictionary of applicant features with raw or encoded attributes.
         """
-        # Ensure correct feature ordering
-        row = [applicant_data[feat] for feat in FEATURE_NAMES]
-        df_row = pd.DataFrame([row], columns=FEATURE_NAMES)
+        # Automatically transform raw dictionary into 26-feature encoded DataFrame
+        df_row = transform_applicant_input(applicant_data)
         
         # Predict probability of default
         prob_default = float(self.model.predict_proba(df_row)[0, 1])
@@ -69,7 +68,7 @@ class CreditRiskExplainer:
         if prob_default < 0.20:
             risk_tier = "LOW RISK (Prime)"
             recommendation = "APPROVE"
-        elif prob_default < 0.45:
+        elif prob_default < 0.46:
             risk_tier = "MODERATE RISK (Near-Prime)"
             recommendation = "MANUAL REVIEW / CONDITIONAL APPROVAL"
         elif prob_default < 0.70:
@@ -83,7 +82,7 @@ class CreditRiskExplainer:
         shap_values = self.explainer(df_row)
         
         # Handle SHAP output dimensions
-        if len(shap_values.values.shape) == 3: # multi-class / 2 classes
+        if len(shap_values.values.shape) == 3:
             vals = shap_values.values[0, :, 1]
             base_val = float(shap_values.base_values[0, 1])
         else:
@@ -91,14 +90,17 @@ class CreditRiskExplainer:
             base_val = float(shap_values.base_values[0])
             
         contributions = []
-        for feat_name, feat_val, shap_val in zip(FEATURE_NAMES, row, vals):
-            contributions.append({
-                "feature": feat_name,
-                "value": feat_val,
-                "shap_value": round(float(shap_val), 4),
-                "impact": "INCREASES RISK" if shap_val > 0 else "REDUCES RISK",
-                "abs_importance": round(float(abs(shap_val)), 4)
-            })
+        for feat_name, shap_val in zip(FEATURE_NAMES, vals):
+            feat_val = float(df_row[feat_name].iloc[0])
+            # Only include non-zero one-hot indicators or numeric features
+            if feat_val != 0.0 or not any(feat_name.startswith(p) for p in ["person_home_ownership_", "loan_intent_", "loan_grade_", "cb_person_default_on_file_"]):
+                contributions.append({
+                    "feature": feat_name,
+                    "value": feat_val,
+                    "shap_value": round(float(shap_val), 4),
+                    "impact": "INCREASES RISK" if shap_val > 0 else "REDUCES RISK",
+                    "abs_importance": round(float(abs(shap_val)), 4)
+                })
             
         # Sort by absolute SHAP impact
         contributions.sort(key=lambda x: x["abs_importance"], reverse=True)

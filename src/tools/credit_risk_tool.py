@@ -24,13 +24,17 @@ class CreditRiskInput(BaseModel):
     person_emp_length: float = Field(..., description="Years of employment (e.g. 5.0)")
     loan_amnt: float = Field(..., description="Requested loan amount in USD (e.g. 15000)")
     loan_int_rate: float = Field(..., description="Interest rate percentage (e.g. 11.5)")
+    cb_person_cred_hist_length: float = Field(..., description="Credit history length in years (e.g. 7.0)")
+    person_home_ownership: str = Field("RENT", description="Home status: RENT, OWN, MORTGAGE, OTHER")
+    loan_intent: str = Field("PERSONAL", description="Loan intent: PERSONAL, EDUCATION, MEDICAL, VENTURE, HOMEIMPROVEMENT, DEBTCONSOLIDATION")
+    loan_grade: str = Field("B", description="Credit grade: A, B, C, D, E, F, G")
+    cb_person_default_on_file: str = Field("N", description="Default history: Y or N")
+    credit_score: Optional[int] = Field(710, description="FICO score (optional)")
+    debt_to_income_ratio: Optional[float] = Field(0.28, description="DTI ratio (optional)")
+    previous_defaults_count: Optional[int] = Field(0, description="Count of past defaults (optional)")
     loan_percent_income: Optional[float] = Field(
         None, description="Ratio of loan amount to annual income (calculated automatically if omitted)"
     )
-    cb_person_cred_hist_length: float = Field(..., description="Credit history length in years (e.g. 7.0)")
-    credit_score: int = Field(..., description="Credit/FICO score between 350 and 850 (e.g. 710)")
-    debt_to_income_ratio: float = Field(..., description="Monthly debt payments / Monthly income ratio (e.g. 0.28)")
-    previous_defaults_count: int = Field(0, description="Count of past credit defaults / bankruptcies (e.g. 0)")
 
 
 class CreditRiskTool(BaseTool):
@@ -49,8 +53,12 @@ class CreditRiskTool(BaseTool):
         loan_amnt: float,
         loan_int_rate: float,
         cb_person_cred_hist_length: float,
-        credit_score: int,
-        debt_to_income_ratio: float,
+        person_home_ownership: str = "RENT",
+        loan_intent: str = "PERSONAL",
+        loan_grade: str = "B",
+        cb_person_default_on_file: str = "N",
+        credit_score: int = 710,
+        debt_to_income_ratio: float = 0.28,
         previous_defaults_count: int = 0,
         loan_percent_income: Optional[float] = None
     ) -> str:
@@ -66,6 +74,10 @@ class CreditRiskTool(BaseTool):
                 "loan_int_rate": loan_int_rate,
                 "loan_percent_income": loan_percent_income,
                 "cb_person_cred_hist_length": cb_person_cred_hist_length,
+                "person_home_ownership": person_home_ownership,
+                "loan_intent": loan_intent,
+                "loan_grade": loan_grade,
+                "cb_person_default_on_file": cb_person_default_on_file,
                 "credit_score": credit_score,
                 "debt_to_income_ratio": debt_to_income_ratio,
                 "previous_defaults_count": previous_defaults_count,
