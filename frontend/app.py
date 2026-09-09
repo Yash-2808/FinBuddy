@@ -522,50 +522,12 @@ st.markdown("""
         margin-bottom: 20px !important;
     }
 
-    /* Scroll reveal CSS classes */
-    .scroll-reveal {
-        opacity: 0;
-        transform: translateY(28px);
-        transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
-        will-change: opacity, transform;
-    }
-
-    .scroll-reveal.in-view {
-        opacity: 1;
-        transform: translateY(0);
+    /* Pure CSS Entrance Animations - 100% cloud & iframe compatible */
+    .bento-card, .fin-metric-badge {
+        animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
     }
 </style>
 """, unsafe_allow_html=True)
-
-# -------------------------------------------------------------
-# Scroll Reveal JavaScript Injection
-# -------------------------------------------------------------
-components.html("""
-<script>
-    function setupScrollObserver() {
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('in-view');
-                }
-            });
-        }, {
-            root: null,
-            threshold: 0.12,
-            rootMargin: '0px 0px -50px 0px'
-        });
-
-        const targets = window.parent.document.querySelectorAll('.bento-card, .fin-metric-badge, [data-testid="stExpander"], [data-testid="stChatMessage"]');
-        targets.forEach(el => {
-            el.classList.add('scroll-reveal');
-            observer.observe(el);
-        });
-    }
-
-    setTimeout(setupScrollObserver, 400);
-    setInterval(setupScrollObserver, 2000);
-</script>
-""", height=0)
 
 # -------------------------------------------------------------
 # Module Loaders
@@ -1164,12 +1126,13 @@ with tab_ops:
     target_f = st.selectbox("Inspect Feature Distribution", FEATURE_NAMES, index=7)
 
     if px is not None:
-        b_series = drift_det.baseline_df[target_f]
-        p_series = prod_data[target_f]
+        b_series = np.asarray(drift_det.baseline_df[target_f])
+        p_series = np.asarray(prod_data[target_f])
+        n_pts = min(1000, len(b_series), len(p_series))
 
         plot_d = pd.DataFrame({
-            "Value": np.concatenate([b_series[:1500], p_series[:1500]]),
-            "Dataset": ["Baseline (Training)"] * 1500 + ["Production (Current)"] * 1500
+            "Value": np.concatenate([b_series[:n_pts], p_series[:n_pts]]),
+            "Dataset": ["Baseline (Training)"] * n_pts + ["Production (Current)"] * n_pts
         })
 
         fig_distr = px.histogram(
