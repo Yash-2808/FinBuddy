@@ -1,34 +1,126 @@
-# 💼 FinBuddy – AI Financial Research & Underwriting Assistant
+# ⚡ FinBuddy – AI Financial Research, Underwriting & MLOps Platform
 
-[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.110+-009688.svg)](https://fastapi.tiangolo.com)
-[![Streamlit](https://img.shields.io/badge/Streamlit-1.32+-FF4B4B.svg)](https://streamlit.io)
-[![XGBoost](https://img.shields.io/badge/XGBoost-2.0+-eb6e00.svg)](https://xgboost.readthedocs.io/)
-[![LangChain](https://img.shields.io/badge/LangChain-0.2+-1C3C3C.svg)](https://langchain.com)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.110%2B-009688.svg)](https://fastapi.tiangolo.com)
+[![Streamlit](https://img.shields.io/badge/Streamlit-1.32%2B-FF4B4B.svg)](https://streamlit.io)
+[![XGBoost](https://img.shields.io/badge/XGBoost-2.0%2B-eb6e00.svg)](https://xgboost.readthedocs.io/)
+[![SHAP](https://img.shields.io/badge/SHAP-Explainability-purple.svg)](https://shap.readthedocs.io/)
+[![LangChain](https://img.shields.io/badge/LangChain-0.2%2B-1C3C3C.svg)](https://langchain.com)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**FinBuddy** is a production-grade Financial AI platform that marries **Agentic LLM multi-tool systems** with **self-trained explainable Machine Learning models (XGBoost + SHAP)** and **robust MLOps & LLMOps observability**.
+> **FinBuddy** is a production-grade Autonomous Financial AI platform combining **Multi-Tool Agentic LLMs**, **High-Accuracy Explainable Machine Learning (XGBoost + SHAP TreeExplainer)**, **Real-Time Market Valuation Sandboxes**, and **Continuous MLOps Concept Drift Observability (PSI & KS-Test)**.
 
 ---
 
-## 🌟 Key Architecture & Capabilities
+## 📑 Table of Contents
+- [Executive Overview](#-executive-overview)
+- [Key Features & Capabilities](#-key-features--capabilities)
+- [Model Performance & Evaluation](#-model-performance--evaluation)
+- [System Architecture](#-system-architecture)
+- [Repository Structure](#-repository-structure)
+- [Interactive Web Dashboard (UI)](#-interactive-web-dashboard-ui)
+- [FastAPI REST API Reference](#-fastapi-rest-api-reference)
+- [Installation & Quick Start](#-installation--quick-start)
+- [Testing Suite](#-testing-suite)
+- [Tech Stack](#-tech-stack)
+- [Governance & Regulatory Compliance](#-governance--regulatory-compliance)
+- [License](#-license)
 
-### 1. 🤖 Multi-Tool Agentic LLM System (LangChain / LangSmith)
-- **Credit Risk Underwriting Tool**: Invokes trained XGBoost models to compute default probabilities and explain driving factors.
-- **Financial Market Data Tool**: Connects to `yfinance` to retrieve real-time stock quotes, valuation multiples (P/E, EV/EBITDA), analyst consensus, and company news.
-- **Financial Mathematics Tool**: Computes Discounted Cash Flow (DCF) intrinsic valuations, Loan EMI amortization schedules, and Sharpe ratios.
-- **Full LLMOps Tracing**: Ready for LangSmith / OpenTelemetry tracing, prompt versioning, and latency monitoring.
+---
 
-### 2. 📊 Explainable Credit Risk ML Pipeline (XGBoost + SHAP)
-- **XGBoost Classifier**: Trained on financial credit underwriting dynamics (Income, DTI, FICO score, loan-to-income ratio, defaults).
-- **SHAP TreeExplainer**: Generates local instance explanations (waterfall attribution charts) highlighting exact risk-increasing and protective factors for regulatory compliance.
+## 🌟 Executive Overview
 
-### 3. 🛡️ MLOps & Data Drift Observatory
-- **Population Stability Index (PSI)** & **Kolmogorov-Smirnov (KS) statistical testing** to track production distribution shifts against baseline training data.
-- Macroeconomic stress simulator for scenario testing and model retraining triggers.
+Modern financial underwriting and equity research require combining quantitative modeling, regulatory compliance, macroeconomic awareness, and real-time market data. **FinBuddy** unifies these disparate disciplines into an integrated platform:
 
-### 4. 🖥️ Interactive Web Dashboard & FastAPI Backend
-- **Streamlit Frontend**: 4-tab interface featuring an AI Chatbot, Credit Risk & SHAP Studio, Market Intelligence Hub, and MLOps Observatory.
-- **FastAPI REST API**: High-performance asynchronous backend exposing endpoints for chat, underwriting, metrics, and drift monitoring.
+1. **Autonomous Financial Research Agent**: A multi-tool LangChain reasoning agent capable of answering complex inquiries, evaluating loan applicants, running intrinsic valuations, and summarizing equity metrics.
+2. **Explainable Underwriting Engine**: An optimized **XGBoost 2.0** model achieving **96.13% accuracy** and **0.9787 ROC-AUC**, paired with **SHAP TreeExplainer** for transparent factor attribution.
+3. **Discounted Cash Flow (DCF) Sandbox**: Interactive 5-year intrinsic valuation models with sensitivity sliders for WACC, terminal growth rates, and cash flow projections.
+4. **MLOps Concept Drift Radar**: Real-time statistical distribution monitoring using **Population Stability Index (PSI)** and **Kolmogorov-Smirnov (KS)** tests to alert against macroeconomic stress.
+5. **Ultra-High-Fidelity Cyber-Fintech UI**: Clean, responsive dark interface inspired by modern fintech design systems with dynamic aurora mesh animations, scroll reveals, and glassmorphic bento grids.
+
+---
+
+## 🚀 Key Features & Capabilities
+
+### 1. 🤖 Autonomous Multi-Tool Financial Agent
+- **Natural Language Router**: Parses natural financial language inquiries into tool execution plans.
+- **Credit Underwriting Tool**: Evaluates applicant attributes (Income, FICO, DTI, Loan Amount, Interest Rate, History, Defaults) and outputs risk tiers and decisions.
+- **Market Data Tool**: Live integration with `yfinance` to retrieve stock quotes, valuation multiples (Trailing P/E, Forward P/E, Market Cap), and historical price actions.
+- **Financial Mathematics Calculator**: Executes Discounted Cash Flow (DCF), Monthly Loan EMI amortization, and Sharpe ratio calculations.
+- **Offline Fallback Engine**: Seamless heuristic router for local execution without requiring external API keys.
+
+### 2. 📊 Explainable Credit Risk ML Engine (XGBoost + SHAP)
+- **Extreme Gradient Boosting (`XGBClassifier`)**:
+  - `300` estimators, `max_depth=6`, `learning_rate=0.08`, `subsample=0.9`.
+  - Binary default prediction with probability calibration.
+- **SHAP (SHapley Additive exPlanations) TreeExplainer**:
+  - Computes exact local log-odds attributions for each feature.
+  - Automatically synthesizes plain-language Underwriting Memorandums categorizing **Top Risk Drivers** and **Top Protective Factors**.
+- **Visual Diagnostics**:
+  - Interactive SHAP waterfall horizontal bar chart.
+  - 5-Axis Financial Health Radar (Credit Score, Income Strength, Debt Capacity, Employment Stability, Loan Coverage).
+
+### 3. 📈 Market Intelligence & DCF Valuation Sandbox
+- Live technical equity price charts with candlestick rendering and 20-period Moving Average (SMA 20) overlays.
+- Real-time valuation multiples dashboard (Trailing P/E, Forward P/E, Market Cap, Current Price).
+- Interactive 5-Year DCF model calculating Present Value of Cash Flows, Terminal Value, Enterprise Value, Fair Share Price, and Margin of Safety against current market price.
+
+### 4. 🛡️ MLOps & Distribution Drift Observatory
+- **Population Stability Index (PSI)**: Monitors distribution divergence per feature (`PSI < 0.10`: Stable, `0.10 - 0.25`: Moderate Drift, `> 0.25`: Critical Shift).
+- **Kolmogorov-Smirnov (KS-Test)**: Computes statistical distances and p-values between baseline training data and live production batches.
+- **Macroeconomic Stress Engine**: Interactive slider simulating inflation, rate hikes, and unemployment to stress-test model resilience in real time.
+- **Distribution Shift Histogram**: Visual overlay comparing baseline training distributions against live production features.
+
+### 5. 📜 Governance & Live Decision Audit Trail
+- Comprehensive Model Governance Card documenting hyperparameters, baseline dataset specs, and regulatory standards.
+- Real-time session decision audit log capturing timestamped applicant profiles, default probabilities, and underwriting verdicts.
+
+---
+
+## 📊 Model Performance & Evaluation
+
+The XGBoost Credit Risk Classifier was evaluated on a stratified holdout test set of **3,750 applicant records** (from a 25,000 baseline dataset):
+
+| Metric | Score | Status | Description |
+| :--- | :---: | :---: | :--- |
+| **Test Accuracy** | **96.13%** | 🟢 Optimal | Overall correct classification rate on holdout data |
+| **ROC-AUC** | **0.9787** | 🟢 Exceptional | Area under Receiver Operating Characteristic curve |
+| **Precision** | **95.69%** | 🟢 High Confidence | Proportion of true defaults among positive predictions |
+| **Recall (Sensitivity)** | **93.50%** | 🟢 High Coverage | Proportion of actual defaults successfully detected |
+| **F1-Score** | **94.58%** | 🟢 Balanced | Harmonic mean of precision and recall |
+| **PR-AUC** | **0.9683** | 🟢 Robust | Area under Precision-Recall curve |
+| **Brier Score** | **0.0338** | 🟢 Calibrated | Mean squared probability error (closer to 0 is superior) |
+
+---
+
+## 🏗️ System Architecture
+
+```
+                               ┌────────────────────────────────────────┐
+                               │       Streamlit Frontend (UI)          │
+                               │   (Aurora Mesh, Bento HUD, Charts)     │
+                               └──────────────────┬─────────────────────┘
+                                                  │
+                                                  ▼
+                               ┌────────────────────────────────────────┐
+                               │         FastAPI REST API Layer         │
+                               │   (/api/chat, /api/credit, /api/drift) │
+                               └──────────────────┬─────────────────────┘
+                                                  │
+                  ┌───────────────────────────────┼───────────────────────────────┐
+                  ▼                               ▼                               ▼
+     ┌────────────────────────┐      ┌────────────────────────┐      ┌────────────────────────┐
+     │   FinBuddy Agent Core  │      │  Credit Risk & SHAP    │      │   MLOps Drift Radar    │
+     │ (LangChain Orchestrator│      │ (XGBoost 2.0 Engine &  │      │  (PSI & KS Statistical │
+     │  & Tool Execution)     │      │  SHAP TreeExplainer)   │      │   Distribution Test)   │
+     └────────────┬───────────┘      └────────────┬───────────┘      └────────────┬───────────┘
+                  │                               │                               │
+     ┌────────────┴───────────┐      ┌────────────┴───────────┐      ┌────────────┴───────────┐
+     │ • Credit Risk Tool     │      │ • credit_risk_xgb.pkl  │      │ • Baseline Data        │
+     │ • Market Data (yfinance│      │ • shap_explainer.pkl   │      │ • Stress Simulator     │
+     │ • DCF/EMI Calculator   │      │ • model_metrics.json   │      │ • PSI/KS Matrix        │
+     └────────────────────────┘      └────────────────────────┘      └────────────────────────┘
+```
 
 ---
 
@@ -37,94 +129,240 @@
 ```
 FinBuddy/
 ├── data/                       # Training baseline & synthetic datasets
-│   └── credit_baseline.csv
-├── models/                     # Serialized XGBoost model, SHAP explainer & metrics
-│   ├── credit_risk_xgb.pkl
-│   ├── shap_explainer.pkl
-│   └── model_metrics.json
+│   └── credit_baseline.csv     # 25,000 synthetic underwriting records
+├── models/                     # Serialized ML & Explainability artifacts
+│   ├── credit_risk_xgb.pkl     # Trained XGBoost binary classifier
+│   ├── shap_explainer.pkl      # Pre-fit SHAP TreeExplainer
+│   └── model_metrics.json      # Evaluation metrics & validation record
 ├── src/
-│   ├── ml/                     # ML & MLOps Pipelines
-│   │   ├── dataset.py          # Synthetic realistic credit data generator
-│   │   ├── train.py            # XGBoost training & evaluation pipeline
-│   │   ├── explain.py          # SHAP local & global attribution engine
-│   │   └── drift.py            # PSI & KS-Test drift monitoring
-│   ├── tools/                  # Agent tool definitions
-│   │   ├── credit_risk_tool.py # Credit underwriting tool
-│   │   ├── market_data_tool.py # Live stock & market quotes tool
-│   │   └── calculator_tool.py  # Financial math (DCF, EMI, Sharpe)
-│   ├── agents/                 # LLM Agent orchestration
+│   ├── agents/                 # LLM Agent Orchestration
 │   │   └── financial_agent.py  # Multi-tool agent with fallback router
-│   └── api/                    # FastAPI Backend
-│       ├── main.py             # REST API server & endpoints
-│       └── schemas.py          # Pydantic request/response models
-├── frontend/                   # Streamlit Interactive Dashboard
-│   └── app.py
-├── tests/                      # Automated test suite
-│   ├── test_ml.py
-│   └── test_agent.py
-├── requirements.txt            # Python dependencies
-├── .env.example                # Environment variables template
-└── README.md
+│   ├── api/                    # FastAPI REST API Backend
+│   │   ├── main.py             # Server endpoints & startup lifecycle
+│   │   └── schemas.py          # Pydantic request & response schemas
+│   ├── ml/                     # ML Training & MLOps Pipelines
+│   │   ├── dataset.py          # Credit dataset generator & preprocessor
+│   │   ├── train.py            # XGBoost training & metric evaluation
+│   │   ├── explain.py          # SHAP attribution & narrative generator
+│   │   └── drift.py            # PSI & KS statistical drift detector
+│   └── tools/                  # LangChain Agent Tool Definitions
+│       ├── credit_risk_tool.py # Credit risk scoring tool
+│       ├── market_data_tool.py # Live stock & market quotes tool
+│       └── calculator_tool.py  # Financial math (DCF, EMI, Sharpe)
+├── frontend/                   # Interactive Web Application
+│   └── app.py                  # Streamlit dashboard with Cyber-Fintech UI
+├── tests/                      # Automated Unit Test Suite
+│   ├── test_ml.py              # ML pipeline & MLOps tests
+│   └── test_agent.py           # Agent orchestrator & tool tests
+├── .env.example                # Environment variable configuration template
+├── .gitignore                  # Git ignore rules for Python & caches
+├── requirements.txt            # Python package dependencies
+└── README.md                   # Comprehensive project documentation
 ```
 
 ---
 
-## 🚀 Quick Start Guide
+## 🖥️ Interactive Web Dashboard (UI)
 
-### 1. Installation & Environment Setup
+The frontend is built with **Streamlit** and heavily styled using custom CSS and JavaScript to deliver an ultra-premium experience:
 
+1. **💬 AI Copilot**:
+   - Conversational assistant with animated waveform indicator.
+   - Quick prompt presets (e.g., "$25k Loan Underwriting", "NVDA Valuation", "DCF intrinsic model", "Loan EMI calculation").
+   - Step-by-step tool execution telemetry expanders.
+2. **📊 Underwriting & SHAP Studio**:
+   - Quick-load archetypes (*Prime Executive, Near-Prime Business, Subprime, Young Graduate*).
+   - Real-time parameter sliders (Age, Income, Employment, Loan Amount, Interest Rate, FICO, DTI, Past Defaults).
+   - Gauge meter, decision verdict HUD, SHAP waterfall bar chart, and 5-axis spider radar.
+3. **📈 Market & DCF Hub**:
+   - Ticker selector and historical horizon view (`1mo` to `5y`).
+   - Candlestick price action charts with SMA-20 and volume bars.
+   - Interactive 5-year DCF model with live valuation comparison.
+4. **🛡️ Drift Radar**:
+   - Statistical drift scoring (System Health index, Critical vs Moderate drift count).
+   - Full PSI and KS test metric table per feature.
+   - Interactive histogram overlay comparing training baseline vs live drifted distributions.
+5. **📜 Governance & Logs**:
+   - Complete model card specifications.
+   - Live session underwriting audit table tracking every scored applicant.
+
+---
+
+## 🔌 FastAPI REST API Reference
+
+The backend runs on **FastAPI** on port `8000`. Full interactive documentation is available at `http://localhost:8000/docs`.
+
+### 1. Health Check
+- **Endpoint**: `GET /api/health`
+- **Response**:
+```json
+{
+  "status": "healthy",
+  "version": "1.0.0",
+  "models_loaded": {
+    "xgboost_classifier": true,
+    "shap_explainer": true
+  }
+}
+```
+
+### 2. Credit Risk Assessment
+- **Endpoint**: `POST /api/credit/score`
+- **Sample Request**:
+```json
+{
+  "person_age": 34,
+  "person_income": 85000,
+  "person_emp_length": 5.5,
+  "loan_amnt": 25000,
+  "loan_int_rate": 10.5,
+  "loan_percent_income": 0.29,
+  "cb_person_cred_hist_length": 8.0,
+  "credit_score": 740,
+  "debt_to_income_ratio": 0.24,
+  "previous_defaults_count": 0
+}
+```
+- **Sample Response**:
+```json
+{
+  "default_probability": 0.042,
+  "approval_score": 96,
+  "recommendation": "APPROVED - PRIME TIER",
+  "risk_tier": "Low Risk",
+  "narrative_explanation": "Applicant demonstrates exceptionally strong creditworthiness with a 740 FICO score and low 0.24 DTI ratio.",
+  "top_risk_drivers": [],
+  "top_protective_factors": [
+    { "feature": "credit_score", "value": 740, "shap_value": -1.42 },
+    { "feature": "debt_to_income_ratio", "value": 0.24, "shap_value": -0.85 }
+  ]
+}
+```
+
+### 3. Model Governance Metrics
+- **Endpoint**: `GET /api/credit/metrics`
+- **Response**: Returns ROC-AUC, Accuracy, Precision, Recall, F1-Score, Brier score, and Confusion Matrix.
+
+### 4. Data Drift Evaluation
+- **Endpoint**: `POST /api/monitoring/drift`
+- **Sample Request**:
+```json
+{
+  "drift_factor": 0.4,
+  "sample_size": 1000
+}
+```
+
+### 5. Multi-Tool AI Chat
+- **Endpoint**: `POST /api/chat`
+- **Sample Request**:
+```json
+{
+  "message": "What is the intrinsic DCF value for cash flows [50000, 60000, 75000] at 10% WACC and 3% growth?"
+}
+```
+
+---
+
+## ⚡ Installation & Quick Start
+
+### 1. Prerequisites
+- Python 3.10, 3.11, 3.12, 3.13, or 3.14
+- Git
+
+### 2. Clone the Repository
 ```bash
-# Clone or navigate to the workspace
-cd "d:/AI PROJECTS/FinBuddy"
+git clone https://github.com/Yash-2808/FinBuddy.git
+cd FinBuddy
+```
 
-# Create and activate virtual environment (optional)
+### 3. Create & Activate Virtual Environment
+```bash
+# Windows
 python -m venv venv
-# Windows:
 .\venv\Scripts\activate
-# Linux/macOS:
-source venv/bin/activate
 
-# Install dependencies
+# Linux / macOS
+python3 -m venv venv
+source venv/bin/activate
+```
+
+### 4. Install Dependencies
+```bash
 pip install -r requirements.txt
 ```
 
-### 2. Configure Environment Variables (Optional)
-Copy `.env.example` to `.env` and configure your API keys (OpenAI / Gemini / LangSmith):
-```bash
-cp .env.example .env
-```
-*(Note: FinBuddy includes an intelligent local fallback router, allowing testing even without external API keys!)*
-
-### 3. Train the Credit Risk Model & Fit SHAP Explainer
-
+### 5. Train Model & Generate Artifacts (Optional)
 ```bash
 python -m src.ml.train
 ```
-This generates the baseline dataset, trains the XGBoost model, fits the SHAP TreeExplainer, and saves serialized artifacts in `models/`.
+*(Pre-trained model artifacts are already included in `models/`!)*
 
-### 4. Run the FastAPI Backend Server
-
+### 6. Run the FastAPI Backend Server
 ```bash
-uvicorn src.api.main:app --host 0.0.0.0 --port 8000 --reload
+python -m uvicorn src.api.main:app --host 127.0.0.1 --port 8000 --reload
 ```
-Interactive Swagger docs will be available at `http://localhost:8000/docs`.
+Open **[http://localhost:8000/docs](http://localhost:8000/docs)** for the Swagger UI.
 
-### 5. Launch the Streamlit Interactive Dashboard
-
+### 7. Run the Streamlit Dashboard
 ```bash
-streamlit run frontend/app.py
+python -m streamlit run frontend/app.py --server.port 8501
 ```
-Open your browser at `http://localhost:8501`.
+Open **[http://localhost:8501](http://localhost:8501)** in your web browser.
 
 ---
 
-## 🧪 Running the Test Suite
+## 🧪 Testing Suite
+
+FinBuddy includes a unit test suite verifying ML pipelines, SHAP explainability, drift detection, tools, and agent fallback routers:
 
 ```bash
-pytest tests/ -v
+# Run tests via Python's built-in unittest runner
+python -m unittest discover -s tests -p "test_*.py" -v
 ```
+
+### Test Coverage Summary:
+- `test_dataset_generation`: Validates distributions, types, and constraints.
+- `test_model_training_and_artifacts`: Validates XGBoost training and artifact serialization.
+- `test_shap_explainer_inference`: Tests SHAP feature contribution calculations.
+- `test_drift_detection_psi`: Verifies PSI and KS statistical alerts under baseline vs drifted distributions.
+- `test_credit_risk_tool_execution`: Validates LangChain underwriting tool outputs.
+- `test_calculator_tool_dcf`: Validates DCF valuation mathematical correctness.
+- `test_calculator_tool_emi`: Validates loan amortization formula calculations.
+- `test_agent_orchestrator_fallback`: Validates autonomous agent fallback routing.
+
+---
+
+## 💻 Tech Stack
+
+| Domain | Technologies |
+| :--- | :--- |
+| **AI & Agent Orchestration** | LangChain, LangSmith / OpenTelemetry tracing ready, Heuristic Fallback Router |
+| **Machine Learning** | XGBoost, Scikit-Learn, NumPy, Pandas |
+| **Explainability (XAI)** | SHAP (SHapley Additive exPlanations TreeExplainer) |
+| **MLOps & Observability** | Population Stability Index (PSI), SciPy (Kolmogorov-Smirnov Test) |
+| **Backend API** | FastAPI, Uvicorn, Pydantic v2 |
+| **Frontend UI** | Streamlit, Plotly Express & Graph Objects, Custom CSS/JS Animations |
+| **Market Intelligence** | yfinance |
+| **Serialization & Storage** | Joblib, JSON |
+
+---
+
+## ⚖️ Governance & Regulatory Compliance
+
+In regulated consumer credit underwriting (e.g., US **FCRA** - Fair Credit Reporting Act and **ECOA** - Equal Credit Opportunity Act):
+- **Adverse Action Transparency**: FinBuddy utilizes SHAP attribution values to explicitly state why an applicant was declined or approved, isolating top risk drivers (e.g., high debt-to-income ratio, low credit score).
+- **Auditability**: Every decision executed in a session is logged in the `session_audit` trail with complete feature payloads and probability outputs.
+- **Fairness & Non-Discrimination**: Protected attributes (race, gender, marital status) are excluded from model training to adhere to fair lending standards.
 
 ---
 
 ## 📜 License
-MIT License
+
+This project is licensed under the **MIT License** – see the [LICENSE](LICENSE) file for details.
+
+---
+
+<p align="center">
+  <b>FinBuddy AI</b> • Built with ❤️ for Next-Generation Autonomous Financial Intelligence
+</p>
