@@ -29,7 +29,7 @@ CATEGORICAL_OPTIONS = {
     "cb_person_default_on_file": ["N", "Y"],
 }
 
-# The complete 26-feature encoded list used for XGBoost training and SHAP
+# The complete 22-feature encoded list used for XGBoost training and SHAP
 FEATURE_NAMES = [
     "person_age",
     "person_income",
@@ -38,24 +38,20 @@ FEATURE_NAMES = [
     "loan_int_rate",
     "loan_percent_income",
     "cb_person_cred_hist_length",
-    "person_home_ownership_MORTGAGE",
     "person_home_ownership_OTHER",
     "person_home_ownership_OWN",
     "person_home_ownership_RENT",
-    "loan_intent_DEBTCONSOLIDATION",
     "loan_intent_EDUCATION",
     "loan_intent_HOMEIMPROVEMENT",
     "loan_intent_MEDICAL",
     "loan_intent_PERSONAL",
     "loan_intent_VENTURE",
-    "loan_grade_A",
     "loan_grade_B",
     "loan_grade_C",
     "loan_grade_D",
     "loan_grade_E",
     "loan_grade_F",
     "loan_grade_G",
-    "cb_person_default_on_file_N",
     "cb_person_default_on_file_Y",
 ]
 
@@ -64,12 +60,12 @@ def load_and_preprocess_kaggle_dataset(
     csv_path: str = "data/credit_risk_dataset.csv"
 ) -> Tuple[pd.DataFrame, pd.DataFrame, pd.Series, Dict[str, Any]]:
     """
-    Loads and preprocesses the Kaggle Credit Risk Dataset.
-    Cleans outliers, imputes missing numerical values, and one-hot encodes categoricals.
+    Loads and preprocesses the Kaggle Credit Risk Dataset matching the new XGBoost model pipeline.
+    Cleans outliers, drops nulls, and one-hot encodes categoricals (drop_first=True).
     
     Returns:
         df_clean: Full cleaned DataFrame (with raw categoricals)
-        X: Encoded feature matrix (32,573 x 26)
+        X: Encoded feature matrix (N x 22)
         y: Binary target series (loan_status)
         meta: Preprocessing metadata (medians, categorical levels)
     """
@@ -84,34 +80,28 @@ def load_and_preprocess_kaggle_dataset(
 
     df = pd.read_csv(csv_path)
 
-    # 1. Clean outliers (age > 90 and emp_length > 50)
-    df = df[(df["person_age"] <= 90) & (df["person_emp_length"].fillna(0) <= 50)].copy()
+    # 1. Drop NaNs and filter extreme outliers (age <= 90)
+    df = df.dropna().copy()
+    df = df[df["person_age"] <= 90].copy()
 
-    # 2. Impute missing values
-    emp_median = float(df["person_emp_length"].median())
-    df["person_emp_length"] = df["person_emp_length"].fillna(emp_median)
+    # 2. Winsorize income at 99th percentile
+    income_cap = float(df["person_income"].quantile(0.99))
+    df["person_income"] = df["person_income"].clip(upper=income_cap)
 
-    grade_rate_medians = df.groupby("loan_grade")["loan_int_rate"].median().to_dict()
-    df["loan_int_rate"] = df.apply(
-        lambda r: grade_rate_medians.get(r["loan_grade"], 11.0) if pd.isna(r["loan_int_rate"]) else r["loan_int_rate"],
-        axis=1
-    )
-
-    # 3. Categorical encoding
+    # 3. Categorical encoding with drop_first=True
     cat_cols = list(CATEGORICAL_OPTIONS.keys())
-    df_encoded = pd.get_dummies(df, columns=cat_cols, drop_first=False)
+    df_encoded = pd.get_dummies(df, columns=cat_cols, drop_first=True)
 
     # Ensure all expected columns exist
     for col in FEATURE_NAMES:
         if col not in df_encoded.columns:
-            df_encoded[col] = 0
+            df_encoded[col] = 0.0
 
     X = df_encoded[FEATURE_NAMES].astype(float)
     y = df_encoded[TARGET_COL].astype(int)
 
     meta = {
-        "emp_median": emp_median,
-        "grade_rate_medians": grade_rate_medians,
+        "income_cap": income_cap,
         "categorical_options": CATEGORICAL_OPTIONS,
         "feature_names": FEATURE_NAMES,
         "n_samples": len(df),
@@ -125,8 +115,8 @@ def transform_applicant_input(
     meta: Optional[Dict[str, Any]] = None
 ) -> pd.DataFrame:
     """
-    Transforms a single applicant dictionary into a 1-row DataFrame aligned with FEATURE_NAMES.
-    Supports both raw categoricals (e.g. loan_intent='EDUCATION') and fallback numeric inputs.
+    Transforms a single applicant dictionary into a 1-row DataFrame aligned with FEATURE_NAMES (22 features).
+    Supports both raw categoricals and numeric inputs.
     """
     row = {}
 
@@ -149,24 +139,30 @@ def transform_applicant_input(
     row["loan_percent_income"] = round(lti, 3)
     row["cb_person_cred_hist_length"] = cred_hist
 
-    # Extract categoricals
+    # Extract categoricals (drop_first=True reference categories: MORTGAGE, DEBTCONSOLIDATION, A, N)
     home_ownership = str(applicant_data.get("person_home_ownership", "RENT")).upper()
     intent = str(applicant_data.get("loan_intent", "PERSONAL")).upper()
     grade = str(applicant_data.get("loan_grade", "B")).upper()
     default_file = str(applicant_data.get("cb_person_default_on_file", "N")).upper()
 
-    # One-hot encode categoricals into the single row
-    for opt in CATEGORICAL_OPTIONS["person_home_ownership"]:
-        row[f"person_home_ownership_{opt}"] = 1.0 if home_ownership == opt else 0.0
+    row["person_home_ownership_OTHER"] = 1.0 if home_ownership == "OTHER" else 0.0
+    row["person_home_ownership_OWN"] = 1.0 if home_ownership == "OWN" else 0.0
+    row["person_home_ownership_RENT"] = 1.0 if home_ownership == "RENT" else 0.0
 
-    for opt in CATEGORICAL_OPTIONS["loan_intent"]:
-        row[f"loan_intent_{opt}"] = 1.0 if intent == opt else 0.0
+    row["loan_intent_EDUCATION"] = 1.0 if intent == "EDUCATION" else 0.0
+    row["loan_intent_HOMEIMPROVEMENT"] = 1.0 if intent == "HOMEIMPROVEMENT" else 0.0
+    row["loan_intent_MEDICAL"] = 1.0 if intent == "MEDICAL" else 0.0
+    row["loan_intent_PERSONAL"] = 1.0 if intent == "PERSONAL" else 0.0
+    row["loan_intent_VENTURE"] = 1.0 if intent == "VENTURE" else 0.0
 
-    for opt in CATEGORICAL_OPTIONS["loan_grade"]:
-        row[f"loan_grade_{opt}"] = 1.0 if grade == opt else 0.0
+    row["loan_grade_B"] = 1.0 if grade == "B" else 0.0
+    row["loan_grade_C"] = 1.0 if grade == "C" else 0.0
+    row["loan_grade_D"] = 1.0 if grade == "D" else 0.0
+    row["loan_grade_E"] = 1.0 if grade == "E" else 0.0
+    row["loan_grade_F"] = 1.0 if grade == "F" else 0.0
+    row["loan_grade_G"] = 1.0 if grade == "G" else 0.0
 
-    for opt in CATEGORICAL_OPTIONS["cb_person_default_on_file"]:
-        row[f"cb_person_default_on_file_{opt}"] = 1.0 if default_file == opt else 0.0
+    row["cb_person_default_on_file_Y"] = 1.0 if default_file in ["Y", "YES", "1", 1] else 0.0
 
     df_out = pd.DataFrame([row])[FEATURE_NAMES]
     return df_out

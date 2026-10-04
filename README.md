@@ -157,11 +157,16 @@ The XGBoost Credit Risk Classifier was evaluated on a stratified holdout test se
 FinBuddy/
 ├── .streamlit/                 # Streamlit configuration
 │   └── config.toml             # Dark theme & headless server config
+├── Credit_train.ipynb          # End-to-end Credit Risk Training & Hyperparameter Tuning Notebook
+├── xgboost_loan_model.joblib   # Serialized Model Bundle (Model, Optimal Threshold, Feature List)
+├── xgboost_loan_model.json     # Native XGBoost JSON Model Format (Cross-platform)
 ├── data/                       # Kaggle dataset & processed baseline
 │   ├── credit_risk_dataset.csv # 32,581 raw Kaggle credit records
-│   ├── credit_baseline.csv     # Cleaned 26-feature encoded baseline
+│   ├── credit_baseline.csv     # Cleaned 22-feature encoded baseline
 │   └── preprocessor_meta.json  # Imputation medians & categorical levels
 ├── models/                     # Serialized ML & Explainability artifacts
+│   ├── xgboost_loan_model.joblib # Model bundle
+│   ├── xgboost_loan_model.json # Native XGBoost JSON model
 │   ├── credit_risk_xgb.pkl     # Trained XGBoost binary classifier
 │   ├── shap_explainer.pkl      # Pre-fit SHAP TreeExplainer
 │   └── model_metrics.json      # Evaluation metrics & validation record
@@ -187,7 +192,6 @@ FinBuddy/
 │   └── test_agent.py           # Agent orchestrator & tool tests
 ├── Dockerfile                  # Production container definition
 ├── docker-compose.yml          # Multi-service composition (UI + API)
-├── .env.example                # Environment variable configuration template
 ├── .gitignore                  # Git ignore rules for Python & caches
 ├── requirements.txt            # Python package dependencies
 └── README.md                   # Comprehensive project documentation

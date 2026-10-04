@@ -45,6 +45,7 @@ class CreditScoreResponse(BaseModel):
     approval_score: float
     risk_tier: str
     recommendation: str
+    optimal_threshold: Optional[float] = 0.6903
     base_value: float
     narrative_explanation: str
     feature_contributions: List[FeatureContribution]

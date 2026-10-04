@@ -112,10 +112,23 @@ def train_credit_model(
     print(f"Recall:    {rec:.4f}")
     print(f"F1-Score:  {f1:.4f}")
     
-    # Save Model Artifact
+    # Save Model Artifacts in multiple formats
     model_path = os.path.join(model_output_dir, "credit_risk_xgb.pkl")
     joblib.dump(model, model_path)
-    print(f"Model saved to: {model_path}")
+    
+    # Save Joblib Bundle
+    bundle_path = os.path.join(model_output_dir, "xgboost_loan_model.joblib")
+    joblib.dump({
+        "model": model,
+        "optimal_threshold": 0.6903,
+        "feature_names": FEATURE_NAMES
+    }, bundle_path)
+    
+    # Save native XGBoost JSON model
+    json_model_path = os.path.join(model_output_dir, "xgboost_loan_model.json")
+    model.save_model(json_model_path)
+    
+    print(f"Models saved to {model_output_dir}: .joblib, .json, .pkl")
     
     # Fit & Save SHAP TreeExplainer
     print("Fitting SHAP TreeExplainer...")

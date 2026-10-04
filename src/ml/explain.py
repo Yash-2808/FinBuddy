@@ -16,13 +16,15 @@ class CreditRiskExplainer:
 
     def __init__(
         self,
-        model_path: str = "models/credit_risk_xgb.pkl",
+        model_path: str = "xgboost_loan_model.joblib",
         explainer_path: str = "models/shap_explainer.pkl"
     ):
-        self.model_path = self._resolve_path(model_path)
+        self.model_path = self._resolve_model_path(model_path)
         self.explainer_path = self._resolve_path(explainer_path)
         self.model: Optional[xgb.XGBClassifier] = None
         self.explainer: Optional[shap.TreeExplainer] = None
+        self.optimal_threshold: float = 0.6903
+        self.expected_features: List[str] = FEATURE_NAMES
         self._load_artifacts()
 
     @staticmethod
@@ -35,16 +37,47 @@ class CreditRiskExplainer:
             return alt_path
         return path
 
+    def _resolve_model_path(self, path: str) -> str:
+        # Candidate model locations in priority order
+        candidates = [
+            path,
+            self._resolve_path(path),
+            self._resolve_path("xgboost_loan_model.joblib"),
+            self._resolve_path("models/xgboost_loan_model.joblib"),
+            self._resolve_path("xgboost_loan_model.json"),
+            self._resolve_path("models/xgboost_loan_model.json"),
+            self._resolve_path("models/credit_risk_xgb.pkl"),
+        ]
+        for candidate in candidates:
+            if os.path.exists(candidate):
+                return candidate
+        return self._resolve_path(path)
+
     def _load_artifacts(self) -> None:
-        if os.path.exists(self.model_path):
-            self.model = joblib.load(self.model_path)
-        else:
+        if not os.path.exists(self.model_path):
             raise FileNotFoundError(
-                f"Model artifact not found at {self.model_path}. Please run `python -m src.ml.train` first."
+                f"Model artifact not found at {self.model_path}. Please check xgboost_loan_model.joblib or run training."
             )
-            
+
+        if self.model_path.endswith(".joblib") or self.model_path.endswith(".pkl"):
+            loaded_obj = joblib.load(self.model_path)
+            if isinstance(loaded_obj, dict):
+                self.model = loaded_obj.get("model")
+                self.optimal_threshold = float(loaded_obj.get("optimal_threshold", 0.6903))
+                if "feature_names" in loaded_obj:
+                    self.expected_features = loaded_obj["feature_names"]
+            else:
+                self.model = loaded_obj
+        elif self.model_path.endswith(".json"):
+            self.model = xgb.XGBClassifier()
+            self.model.load_model(self.model_path)
+
         if os.path.exists(self.explainer_path):
-            self.explainer = joblib.load(self.explainer_path)
+            try:
+                self.explainer = joblib.load(self.explainer_path)
+            except Exception:
+                if self.model is not None:
+                    self.explainer = shap.TreeExplainer(self.model)
         elif self.model is not None:
             self.explainer = shap.TreeExplainer(self.model)
 
@@ -58,20 +91,21 @@ class CreditRiskExplainer:
         Args:
             applicant_data: Dictionary of applicant features with raw or encoded attributes.
         """
-        # Automatically transform raw dictionary into 26-feature encoded DataFrame
+        # Automatically transform raw dictionary into 22-feature encoded DataFrame
         df_row = transform_applicant_input(applicant_data)
         
         # Predict probability of default
         prob_default = float(self.model.predict_proba(df_row)[0, 1])
         
-        # Risk Category classification
+        # Risk Category classification using optimal threshold (0.6903)
+        opt_thresh = getattr(self, "optimal_threshold", 0.6903)
         if prob_default < 0.20:
             risk_tier = "LOW RISK (Prime)"
             recommendation = "APPROVE"
-        elif prob_default < 0.46:
+        elif prob_default < opt_thresh:
             risk_tier = "MODERATE RISK (Near-Prime)"
-            recommendation = "MANUAL REVIEW / CONDITIONAL APPROVAL"
-        elif prob_default < 0.70:
+            recommendation = "APPROVE (Standard Terms)"
+        elif prob_default < 0.85:
             risk_tier = "HIGH RISK (Subprime)"
             recommendation = "REJECT OR REQUIRE COLLATERAL / CO-SIGNER"
         else:
@@ -124,6 +158,7 @@ class CreditRiskExplainer:
             "approval_score": round((1.0 - prob_default) * 100, 1),
             "risk_tier": risk_tier,
             "recommendation": recommendation,
+            "optimal_threshold": round(opt_thresh, 4),
             "base_value": round(base_val, 4),
             "narrative_explanation": narrative,
             "feature_contributions": contributions,

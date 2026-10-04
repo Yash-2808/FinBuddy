@@ -64,8 +64,13 @@ def get_drift_detector():
 @app.get("/api/health", response_model=HealthResponse)
 def health_check():
     """Returns system status and model readiness."""
-    model_exists = os.path.exists("models/credit_risk_xgb.pkl")
-    explainer_exists = os.path.exists("models/shap_explainer.pkl")
+    model_exists = (
+        os.path.exists("xgboost_loan_model.joblib")
+        or os.path.exists("xgboost_loan_model.json")
+        or os.path.exists("models/xgboost_loan_model.joblib")
+        or os.path.exists("models/credit_risk_xgb.pkl")
+    )
+    explainer_exists = os.path.exists("models/shap_explainer.pkl") or model_exists
     
     return {
         "status": "healthy" if model_exists else "needs_training",
